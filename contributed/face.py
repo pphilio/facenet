@@ -42,8 +42,10 @@ import facenet
 
 
 gpu_memory_fraction = 0.3
-facenet_model_checkpoint = os.path.dirname(__file__) + "/../model_checkpoints/20170512-110547"
-classifier_model = os.path.dirname(__file__) + "/../model_checkpoints/my_classifier_1.pkl"
+# facenet_model_checkpoint = os.path.dirname(__file__) + "/../model_checkpoints/20170512-110547"
+facenet_model_checkpoint = os.path.dirname(__file__) + "/../model/20180402-114759"
+# classifier_model = os.path.dirname(__file__) + "/../model_checkpoints/my_classifier_1.pkl"
+classifier_model = os.path.dirname(__file__) + "/../model/lfw_classifier.pkl"
 debug = False
 
 
@@ -87,12 +89,16 @@ class Identifier:
     def __init__(self):
         with open(classifier_model, 'rb') as infile:
             self.model, self.class_names = pickle.load(infile)
-
     def identify(self, face):
         if face.embedding is not None:
             predictions = self.model.predict_proba([face.embedding])
-            best_class_indices = np.argmax(predictions, axis=1)
-            return self.class_names[best_class_indices[0]]
+            print(predictions)
+            if(np.max(predictions)>0.6):
+                best_class_indices = np.argmax(predictions, axis=1)
+                return self.class_names[best_class_indices[0]]
+            else:
+                return "unknown"
+
 
 
 class Encoder:
@@ -100,7 +106,6 @@ class Encoder:
         self.sess = tf.Session()
         with self.sess.as_default():
             facenet.load_model(facenet_model_checkpoint)
-
     def generate_embedding(self, face):
         # Get input and output tensors
         images_placeholder = tf.get_default_graph().get_tensor_by_name("input:0")
@@ -117,7 +122,7 @@ class Encoder:
 class Detection:
     # face detection parameters
     minsize = 20  # minimum size of face
-    threshold = [0.6, 0.7, 0.7]  # three steps's threshold
+    threshold = [0.6, 0.7, 0.8]  # three steps's threshold
     factor = 0.709  # scale factor
 
     def __init__(self, face_crop_size=160, face_crop_margin=32):

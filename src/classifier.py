@@ -45,8 +45,11 @@ def main(args):
             np.random.seed(seed=args.seed)
             
             if args.use_split_dataset:
+                print(args.data_dir)
                 dataset_tmp = facenet.get_dataset(args.data_dir)
+                print(dataset_tmp)
                 train_set, test_set = split_dataset(dataset_tmp, args.min_nrof_images_per_class, args.nrof_train_images_per_class)
+
                 if (args.mode=='TRAIN'):
                     dataset = train_set
                 elif (args.mode=='CLASSIFY'):
@@ -58,7 +61,7 @@ def main(args):
             for cls in dataset:
                 assert(len(cls.image_paths)>0, 'There must be at least one image for each class in the dataset')            
 
-                 
+            print(dataset)
             paths, labels = facenet.get_image_paths_and_labels(dataset)
             
             print('Number of classes: %d' % len(dataset))

@@ -211,6 +211,8 @@ class Network(object):
         target_exp = tf.exp(target-max_axis)
         normalize = tf.reduce_sum(target_exp, axis, keepdims=True)
         softmax = tf.div(target_exp, normalize, name)
+        print("dddddddddddddddddddddddddddddd")
+        print(softmax)
         return softmax
     
 class PNet(Network):
@@ -224,8 +226,8 @@ class PNet(Network):
              .conv(3, 3, 32, 1, 1, padding='VALID', relu=False, name='conv3')
              .prelu(name='PReLU3')
              .conv(1, 1, 2, 1, 1, relu=False, name='conv4-1')
-             .softmax(3,name='prob1'))
-
+             # .softmax(3,name='prob1'))
+             .prelu(3, name='prob1'))
         (self.feed('PReLU3') #pylint: disable=no-value-for-parameter
              .conv(1, 1, 4, 1, 1, relu=False, name='conv4-2'))
         
@@ -243,7 +245,8 @@ class RNet(Network):
              .fc(128, relu=False, name='conv4')
              .prelu(name='prelu4')
              .fc(2, relu=False, name='conv5-1')
-             .softmax(1,name='prob1'))
+             # .softmax(1,name='prob1'))
+             .prelu(1, name='prob1'))
 
         (self.feed('prelu4') #pylint: disable=no-value-for-parameter
              .fc(4, relu=False, name='conv5-2'))
@@ -265,7 +268,8 @@ class ONet(Network):
              .fc(256, relu=False, name='conv5')
              .prelu(name='prelu5')
              .fc(2, relu=False, name='conv6-1')
-             .softmax(1, name='prob1'))
+             # .softmax(1, name='prob1'))
+             .prelu(1, name='prob1'))
 
         (self.feed('prelu5') #pylint: disable=no-value-for-parameter
              .fc(4, relu=False, name='conv6-2'))
