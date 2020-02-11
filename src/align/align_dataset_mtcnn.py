@@ -31,14 +31,14 @@ import os
 import argparse
 import tensorflow as tf
 import numpy as np
-import facenet
-import align.detect_face
+import src.facenet as facenet
+import src.align.detect_face as detect_face
 import random
 from time import sleep
 
 def main(args):
     sleep(random.random())
-    output_dir = os.path.expanduser(args.output_dir)
+    output_dir = os.path.expanduser('../../ouroutput')
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     # Store some git revision info in a text file in the log directory
@@ -52,7 +52,7 @@ def main(args):
         gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=args.gpu_memory_fraction)
         sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options, log_device_placement=False))
         with sess.as_default():
-            pnet, rnet, onet = align.detect_face.create_mtcnn(sess, None)
+            pnet, rnet, onet = detect_face.create_mtcnn(sess, None)
     
     minsize = 20 # minimum size of face
     threshold = [ 0.6, 0.7, 0.7 ]  # three steps's threshold
@@ -93,7 +93,7 @@ def main(args):
                             img = facenet.to_rgb(img)
                         img = img[:,:,0:3]
     
-                        bounding_boxes, _ = align.detect_face.detect_face(img, minsize, pnet, rnet, onet, threshold, factor)
+                        bounding_boxes, _ = detect_face.detect_face(img, minsize, pnet, rnet, onet, threshold, factor)
                         nrof_faces = bounding_boxes.shape[0]
                         if nrof_faces>0:
                             det = bounding_boxes[:,0:4]
