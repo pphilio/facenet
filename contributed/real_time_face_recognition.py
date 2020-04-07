@@ -32,6 +32,7 @@ import cv2
 
 import contributed.face as face
 
+i=0
 
 def add_overlays(frame, faces, frame_rate):
     if faces is not None:
@@ -40,10 +41,13 @@ def add_overlays(frame, faces, frame_rate):
             cv2.rectangle(frame,
                           (face_bb[0], face_bb[1]), (face_bb[2], face_bb[3]),
                           (0, 255, 0), 2)
+
             if face.name is not None:
-                cv2.putText(frame, face.name, (face_bb[0], face_bb[3]),
+                cv2.putText(frame, "{}({:.2f}%)".format(face.name, face.percent * 100), (face_bb[0], face_bb[3]),
                             cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0),
                             thickness=2, lineType=2)
+                if face.name=='under60':
+                    cv2.imwrite('{}/{}.jpg'.format('../unknown', i), frame)
 
     cv2.putText(frame, str(frame_rate) + " fps", (10, 30),
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0),
